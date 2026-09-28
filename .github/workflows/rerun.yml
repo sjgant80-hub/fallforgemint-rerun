@@ -1,22 +1,31 @@
 name: rerun
 # Re-run a FallForge Mint scorecard on a clean GitHub runner. Put your re-run bundle in this repo (the page's
 # "Download re-run bundle" button makes one), then Actions → rerun → Run workflow.
+# mode: mint makes a fresh scorecard on the runner from a spec { task, examples, holdout, base } instead; its receipt's
+# rerun link is this run, and the rail can later confirm this run made that exact receipt.
 # The rail itself lives in sjgant80-hub/fallforgemint: its judgements are in a mutation-gated kernel, and this file
-# only calls it. To fix the rail at one version, replace BOTH `@main` and `rail-ref: main` with the same commit SHA.
+# only calls it. The rail always runs the code of the commit you call, so to fix it at one version, replace `@main`
+# with a commit SHA. Keep this workflow to this one job: the rail vouches for a run only when nothing else ran in it.
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: 'verify a bundle, or mint a fresh scorecard from a spec'
+        type: choice
+        options: [verify, mint]
+        default: verify
       bundle:
-        description: 'path of the re-run bundle in this repo (or an https URL)'
+        description: 'path of the re-run bundle (verify) or spec (mint) in this repo, or an https URL'
         required: true
         default: bundle.json
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   rerun:
     uses: sjgant80-hub/fallforgemint/.github/workflows/rerun.yml@main
     with:
       bundle: ${{ inputs.bundle }}
-      rail-ref: main
+      mode: ${{ inputs.mode }}

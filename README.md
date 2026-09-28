@@ -13,15 +13,17 @@ Re-run a [FallForge Mint](https://sjgant80-hub.github.io/fallforgemint/) scoreca
 
 The `bundle.json` already here is a real scorecard, minted in CI, so you can try the rail before you have your own.
 
+**Mint in CI instead.** Run the workflow with **mode: mint** and a spec (`spec.json` here is one: a task, examples, how many to hold out, a base model). The runner mints the model, scores it on the held-out examples, signs the scorecard and uploads its bundle. The scorecard's `rerun` link is that run. Because this repo only calls the rail, in one job, at a commit that checks out its own code, the rail can later confirm that run made that exact scorecard. Keep the workflow to that one job, or it cannot.
+
 ## What the runner does
 
-1. **Re-verify.** It recomputes every recorded number from the bundle: the fingerprints, the rebuilt Modelfile's hash, the task and evidence hashes, the re-graded scores, the held-out disjointness and the signature. Any mismatch is **TAMPERED**: the job fails and nothing is re-executed.
+1. **Re-verify.** It recomputes every recorded number from the bundle: the fingerprints, the rebuilt Modelfile's hash, the task and evidence hashes, the re-graded scores, the held-out disjointness and the signature. If the scorecard names a CI run, it looks that run up on GitHub and checks the run made this exact scorecard (GitHub keeps the run's upload about 90 days; after that it confirms only that the run was the rail and was running at the time). Any mismatch is **TAMPERED**: the job fails and nothing is re-executed.
 2. **Re-execute.** It installs Ollama (pinned), rebuilds the minted model, and runs every held-out example through the base and the minted model again. It then grades the results.
    - **Same runtime and model digest:** the hits must match exactly (**REPRODUCED**).
    - **Different runtime** (a scorecard made in a browser): the verdict must hold (**AGREES**).
    - **Otherwise:** **DID_NOT_REPRODUCE**, and the job fails.
 
-The rail runs from [sjgant80-hub/fallforgemint](https://github.com/sjgant80-hub/fallforgemint). Its judgements live in a mutation-gated kernel, and this repo only calls it. To fix the rail at one version, set both `@main` and `rail-ref` in `.github/workflows/rerun.yml` to the same commit SHA.
+The rail runs from [sjgant80-hub/fallforgemint](https://github.com/sjgant80-hub/fallforgemint). Its judgements live in a mutation-gated kernel, and this repo only calls it. The rail always runs the code of the commit you call, so to fix it at one version, replace `@main` in `.github/workflows/rerun.yml` with a commit SHA.
 
 <!-- RAIL-RUNS -->
 **Proven from this repo, on real runs.** The `bundle.json` here, re-run through this template, is **REPRODUCED** and the job passes: [run 36432258746](https://github.com/sjgant80-hub/fallforgemint-rerun/actions/runs/36432258746). An earlier bundle with one borderline row failed here, loudly, when that row flipped on this runner's CPU: [run 36427951661](https://github.com/sjgant80-hub/fallforgemint-rerun/actions/runs/36427951661). The tampered and forged proofs, and the runs that fail them, are listed in [the rail's README](https://github.com/sjgant80-hub/fallforgemint#re-run-it-in-ci-the-rail).
