@@ -24,6 +24,9 @@ The `bundle.json` already here is a real scorecard, minted in CI, so you can try
 The rail runs from [sjgant80-hub/fallforgemint](https://github.com/sjgant80-hub/fallforgemint). Its judgements live in a mutation-gated kernel, and this repo only calls it. To fix the rail at one version, set both `@main` and `rail-ref` in `.github/workflows/rerun.yml` to the same commit SHA.
 
 <!-- RAIL-RUNS -->
+**Proven from this repo, on real runs.** The `bundle.json` here, re-run through this template, is **REPRODUCED** and the job passes: [run 36432258746](https://github.com/sjgant80-hub/fallforgemint-rerun/actions/runs/36432258746). An earlier bundle with one borderline row failed here, loudly, when that row flipped on this runner's CPU: [run 36427951661](https://github.com/sjgant80-hub/fallforgemint-rerun/actions/runs/36427951661). The tampered and forged proofs, and the runs that fail them, are listed in [the rail's README](https://github.com/sjgant80-hub/fallforgemint#re-run-it-in-ci-the-rail).
+
+These runs are from a repo in the same account as the rail. Any repo can call a public repo's reusable workflow, but a run from a different account has not been shown here yet.
 <!-- /RAIL-RUNS -->
 
 **What it shows, and what it doesn't.** Every recorded number is recomputed, and the held-out set is run again on that runner. It does not attest the machine that made the original, and it says nothing about what the base model saw in its own training.
